@@ -1,0 +1,30 @@
+[project]
+name = "trend-analyzer"
+version = "0.1.0"
+description = "Local trend analyzer with scheduled research runs and SQLite under ~/.Trend_analyzer/"
+requires-python = ">=3.10"
+dependencies = [
+    "APScheduler>=3.10.4",
+    "typer>=0.12.3",
+    "tzlocal>=5.2",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "anthropic>=0.34.0",
+]
+
+[project.scripts]
+trend-analyzer = "trend_analyzer.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["trend_analyzer*"]
+
+[tool.setuptools.package-data]
+trend_analyzer = ["ui_dist/**/*"]
