@@ -236,9 +236,11 @@ def cmd_web(
     """Start the web UI and API (scheduler runs in the server process)."""
     import uvicorn
 
+    from trend_analyzer.server import app as server_app
+
     typer.echo(f"Open http://{host}:{port}/ in your browser", err=True)
     uvicorn.run(
-        "trend_analyzer.server:app",
+        server_app,
         host=host,
         port=port,
         reload=False,

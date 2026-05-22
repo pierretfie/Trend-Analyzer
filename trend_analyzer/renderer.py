@@ -611,7 +611,7 @@ def save_report_to_db(conn: sqlite3.Connection, report: Any) -> tuple[int, int]:
         trend_id = dbmod.add_trend(
             conn,
             run_id=run_id,
-            title=signal[:200],
+            title=" ".join(str(signal or "").split()),
             summary=summary,
             category=_infer_category(query),
             source_url=source_url,

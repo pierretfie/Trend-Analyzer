@@ -369,10 +369,10 @@ export function ChatPanel({
   const [deepReadMaxArticles, setDeepReadMaxArticles] = useState(3);
   const [sending, setSending] = useState(false);
   const [streamingContent, setStreamingContent] = useState("");
-  const [phase, setPhase] = useState<"searching" | "thinking" | "reading">(
+  const [_phase, setPhase] = useState<"searching" | "thinking" | "reading">(
     "thinking",
   );
-  const [query, setQuery] = useState<string | undefined>();
+  const [_query, setQuery] = useState<string | undefined>();
   const [liveTraceLogs, setLiveTraceLogs] = useState<string[]>([]);
   const [liveTraceSources, setLiveTraceSources] = useState<
     { title: string; link: string; snippet: string }[]

@@ -1042,7 +1042,7 @@ export function Overview({
                       {timeAgo(t.discovered_at)}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-white leading-snug">
+                  <p className="text-sm font-semibold text-white leading-snug text-balance break-words">
                     {stripMd(t.title)}
                   </p>
                   {t.summary && (

@@ -121,6 +121,58 @@ Prerequisites:
    http://127.0.0.1:8765/
 
 
+Linux Packaging
+---------------
+
+You can build a Linux package from this repo after installing the frontend
+dependencies and PyInstaller.
+
+Prerequisites:
+- Python 3.10+
+- Node.js + npm
+- `pyinstaller`
+- `dpkg-deb` for `.deb` builds
+- `appimagetool` for AppImage builds
+
+Build steps:
+1) Install Python dependencies
+
+   `pip install -r requirements.txt`
+
+2) Install the app package
+
+   `pip install -e .`
+
+3) Install frontend dependencies
+
+   `npm run install-all`
+
+4) Build the frontend
+
+   `npm run build`
+
+5) Build the Linux package
+
+   Debian package:
+
+   `npm run package:linux:deb`
+
+   AppImage:
+
+   `npm run package:linux:appimage`
+
+Output:
+- `dist/linux/trend-analyzer_0.1.0_amd64.deb`
+- `dist/linux/trend-analyzer-0.1.0-x86_64.AppImage` if `appimagetool` is installed
+
+Install the Debian package:
+
+`sudo apt install ./dist/linux/trend-analyzer_0.1.0_amd64.deb`
+
+The package includes the bundled frontend and the Python backend, so it can be
+installed and run on Linux without needing to launch the repo source tree.
+
+
 Model Setup
 -----------
 

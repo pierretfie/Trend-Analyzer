@@ -6,6 +6,8 @@
     "dev": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev --prefix frontend\"",
     "dev:api": ".venv/bin/python -m uvicorn trend_analyzer.server:app --reload --host 127.0.0.1 --port 8765",
     "build": "npm run build --prefix frontend",
+    "package:linux:deb": "python3 scripts/package_linux.py --format deb",
+    "package:linux:appimage": "python3 scripts/package_linux.py --format appimage",
     "preview": "npm run preview --prefix frontend",
     "start": ".venv/bin/python -m uvicorn trend_analyzer.server:app --host 127.0.0.1 --port 8765"
   },
