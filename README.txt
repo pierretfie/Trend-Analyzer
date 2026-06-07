@@ -1,7 +1,6 @@
-Trend Analyzer
-==============
+# Trend Analyzer
 
-Trend Analyzer is an AI-powered business intelligence project that discovers market trends, generates practical advice, and records predictions for your business.
+An AI-powered business intelligence tool that discovers market trends, generates practical advice, and records predictions for your business.
 
 It combines:
 - Business profile context (company, sector, region, products, notes)
@@ -12,254 +11,195 @@ It combines:
 
 The goal is to help a business detect meaningful external signals early, then turn those signals into action-oriented recommendations.
 
+---
 
-Core Capabilities
------------------
+## Core Capabilities
 
-1) Trend discovery by business context
-- The analyzer uses your saved company profile + instructions to decide what matters.
-- It searches external sources for relevant trend signals.
-- It stores discovered trends and source references in SQLite.
+### 1. Trend Discovery by Business Context
+The analyzer uses your saved company profile and instructions to decide what matters, searches external sources for relevant trend signals, and stores discovered trends and source references in SQLite.
 
-2) Advice and recommendations
-- Each trend cycle generates a structured report with:
-  - Summary
-  - Trend signals
-  - Recommended actions
-  - Severity level (low/medium/high/critical)
-  - Source URLs
+### 2. Advice and Recommendations
+Each trend cycle generates a structured report with:
+- Summary
+- Trend signals
+- Recommended actions
+- Severity level (`low` / `medium` / `high` / `critical`)
+- Source URLs
 
-3) Predictions and forecasting
-- The AI output includes predictions with:
-  - Horizon (days/weeks/months/years)
-  - Target date
-  - Confidence level
-  - Rationale
-  - Linked sources
-- Predictions are saved to a dedicated table for follow-up tracking.
+### 3. Predictions and Forecasting
+AI output includes predictions with:
+- Horizon (days/weeks/months/years)
+- Target date
+- Confidence level
+- Rationale
+- Linked sources
 
-4) Local + API model support
+Predictions are saved to a dedicated table for follow-up tracking.
+
+### 4. Local + API Model Support
 - OpenAI API models
 - Google Gemini API models
-- Local GGUF models through llama-cpp-python
+- Local GGUF models via `llama-cpp-python`
 
-5) Scheduling and automation
+### 5. Scheduling and Automation
 - Run one-off analysis immediately
 - Configure recurring daily/weekly schedules
 - Run a background scheduler daemon
 - Web server mode starts API + scheduler together
 
-6) Web dashboard + API
+### 6. Web Dashboard + API
 - FastAPI backend
 - React/Vite frontend
 - Panels for model setup, business info, schedules, reports, trends, and history
 
+---
 
-Architecture (High Level)
--------------------------
+## Architecture
 
-Backend (Python):
+### Backend (Python)
 - FastAPI API server
 - Typer CLI
 - APScheduler-based scheduling daemon
 - SQLite database (WAL mode)
 - AI orchestration and tool-calling logic
 
-Frontend (React + TypeScript):
+### Frontend (React + TypeScript)
 - Business profile and instructions setup
 - Model/provider configuration UI
 - Report/history and schedule controls
 - Charts and visual trend summaries
 
-Storage:
-- Default data directory: ~/.Trend_analyzer/
-- Default database: ~/.Trend_analyzer/trend_analyzer.db
-- Override data dir via:
-  - TREND_ANALYZER_DATA_DIR
-  - TA_DATA_DIR
+### Storage
+- Default data directory: `~/.Trend_analyzer/`
+- Default database: `~/.Trend_analyzer/trend_analyzer.db`
+- Override via environment variables:
+  - `TREND_ANALYZER_DATA_DIR`
+  - `TA_DATA_DIR`
 
+---
 
-Project Goals Supported
------------------------
+## Quick Start
 
-This codebase is built around these practical outcomes:
-- Predict trend impact windows before they are obvious
-- Advise business owners with actionable next steps
-- Recognize external patterns that affect pricing, demand, supply, and risk
-- Present results in readable report formats with visuals
+**Prerequisites:** Python 3.10+, Node.js + npm
 
+```bash
+# 1. Install Python dependencies
+pip install -r requirements.txt
 
-Quick Start
------------
+# 2. Install app package (CLI command)
+pip install -e .
 
-Prerequisites:
-- Python 3.10+
-- Node.js + npm
+# 3. Install frontend/dev dependencies
+npm run install-all
 
-1) Install Python dependencies
+# 4. Initialize database
+trend-analyzer init
 
-   pip install -r requirements.txt
+# 5. Start full web app (API + scheduler)
+npm run start
+```
 
-2) Install app package (CLI command)
+Then open [http://127.0.0.1:8765/](http://127.0.0.1:8765/) in your browser.
 
-   pip install -e .
+---
 
-3) Install frontend/dev dependencies
+## Model Setup
 
-   npm run install-all
+Configure a provider in the **Model Setup** panel:
 
-4) Initialize database
+| Provider | Requirements |
+|----------|-------------|
+| **OpenAI** | API key, select `openai` as provider |
+| **Gemini** | API key, select supported Gemini model, select `gemini` as provider |
+| **Local** | Path to GGUF file, configure `n_ctx` and `n_gpu_layers`, select `local` as provider — requires `llama-cpp-python` |
 
-   trend-analyzer init
+> If no provider is configured, analysis and chat cannot run.
 
-5) Start full web app (API + scheduler)
+---
 
-   npm run start
+## Running Research
 
-6) Open browser
+```bash
+# Run immediately
+trend-analyzer run-once
 
-   http://127.0.0.1:8765/
+# Add a daily schedule
+trend-analyzer schedule add daily --times 07:00,19:30 --label "Daily trend scan"
 
+# Add a weekly schedule
+trend-analyzer schedule add weekly --times 08:00 --weekdays mon,thu --label "Weekly strategic scan"
 
-Linux Packaging
----------------
+# List schedules
+trend-analyzer schedule list
 
-You can build a Linux package from this repo after installing the frontend
-dependencies and PyInstaller.
+# Enable / disable / remove a schedule
+trend-analyzer schedule enable <id>
+trend-analyzer schedule disable <id>
+trend-analyzer schedule remove <id>
 
-Prerequisites:
-- Python 3.10+
-- Node.js + npm
-- `pyinstaller`
-- `dpkg-deb` for `.deb` builds
-- `appimagetool` for AppImage builds
+# Run scheduler only (no UI)
+trend-analyzer serve
 
-Build steps:
-1) Install Python dependencies
+# Run web app from CLI
+trend-analyzer web --host 127.0.0.1 --port 8765
+```
 
-   `pip install -r requirements.txt`
+---
 
-2) Install the app package
-
-   `pip install -e .`
-
-3) Install frontend dependencies
-
-   `npm run install-all`
-
-4) Build the frontend
-
-   `npm run build`
-
-5) Build the Linux package
-
-   Debian package:
-
-   `npm run package:linux:deb`
-
-   AppImage:
-
-   `npm run package:linux:appimage`
-
-Output:
-- `dist/linux/trend-analyzer_0.1.0_amd64.deb`
-- `dist/linux/trend-analyzer-0.1.0-x86_64.AppImage` if `appimagetool` is installed
-
-Install the Debian package:
-
-`sudo apt install ./dist/linux/trend-analyzer_0.1.0_amd64.deb`
-
-The package includes the bundled frontend and the Python backend, so it can be
-installed and run on Linux without needing to launch the repo source tree.
-
-
-Model Setup
------------
-
-Configure one of the supported AI providers in the Model Setup panel:
-
-- OpenAI
-  - Add API key
-  - Select provider as openai
-
-- Gemini
-  - Add API key
-  - Choose supported Gemini model
-  - Select provider as gemini
-
-- Local model (offline/private workflows)
-  - Set path to GGUF model file
-  - Configure context window (n_ctx)
-  - Configure GPU layers (n_gpu_layers)
-  - Select provider as local
-  - Requires llama-cpp-python
-
-If no provider is configured, analysis/chat cannot run.
-
-
-Running Research
-----------------
-
-Immediate run:
-- trend-analyzer run-once
-
-Add a daily schedule:
-- trend-analyzer schedule add daily --times 07:00,19:30 --label "Daily trend scan"
-
-Add a weekly schedule:
-- trend-analyzer schedule add weekly --times 08:00 --weekdays mon,thu --label "Weekly strategic scan"
-
-List schedules:
-- trend-analyzer schedule list
-
-Enable/disable/remove schedule:
-- trend-analyzer schedule enable <id>
-- trend-analyzer schedule disable <id>
-- trend-analyzer schedule remove <id>
-
-Run scheduler only (no UI):
-- trend-analyzer serve
-
-Run web app from CLI:
-- trend-analyzer web --host 127.0.0.1 --port 8765
-
-
-How Trends, Advice, and Predictions Are Produced
-------------------------------------------------
+## How Trends, Advice, and Predictions Are Produced
 
 Each research pass:
-1. Loads business profile + user instructions + model/search settings.
-2. Collects external signals from enabled search/research sources.
-3. Prompts the chosen AI model to analyze relevance for the business.
-4. Builds a structured trend report (summary/signals/actions/severity/sources).
-5. Stores report and prediction records in SQLite.
-6. Exposes results through API and frontend views.
+1. Loads business profile, user instructions, and model/search settings
+2. Collects external signals from enabled search/research sources
+3. Prompts the chosen AI model to analyze relevance for the business
+4. Builds a structured trend report (summary / signals / actions / severity / sources)
+5. Stores report and prediction records in SQLite
+6. Exposes results through the API and frontend
 
-This makes the system useful for operational monitoring and strategic planning.
+---
 
+## Linux Packaging
 
-Key Tech Stack
---------------
+**Additional prerequisites:** `pyinstaller`, `dpkg-deb` (for `.deb`), `appimagetool` (for AppImage)
 
-Backend:
-- Python
-- FastAPI
-- Typer
-- APScheduler
-- SQLite
+```bash
+pip install -r requirements.txt
+pip install -e .
+npm run install-all
+npm run build
 
-Frontend:
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- Recharts + Mermaid
+# Debian package
+npm run package:linux:deb
 
+# AppImage
+npm run package:linux:appimage
+```
 
-Notes
------
+**Output files:**
+- `dist/linux/trend-analyzer_0.1.0_amd64.deb`
+- `dist/linux/trend-analyzer-0.1.0-x86_64.AppImage`
 
-- This project stores data locally by default.
-- API keys are stored in the app settings table.
-- The scheduler runs inside the FastAPI server process when using web mode.
-- Local model performance depends heavily on hardware and GGUF model size.
+**Install the Debian package:**
+```bash
+sudo apt install ./dist/linux/trend-analyzer_0.1.0_amd64.deb
+```
+
+The package includes the bundled frontend and Python backend — no need to run from the source tree.
+
+---
+
+## Tech Stack
+
+| Layer | Technologies |
+|-------|-------------|
+| **Backend** | Python, FastAPI, Typer, APScheduler, SQLite |
+| **Frontend** | React, TypeScript, Vite, Tailwind CSS, Recharts, Mermaid |
+
+---
+
+## Notes
+
+- Data is stored locally by default
+- API keys are stored in the app settings table
+- The scheduler runs inside the FastAPI server process in web mode
+- Local model performance depends on hardware and GGUF model size
